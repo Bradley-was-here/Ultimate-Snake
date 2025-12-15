@@ -1,113 +1,206 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Snake – Eat, Dodge, Power-ups</title>
-<style>
-:root{--bg:#0b0f14;--panel:#121a24;--text:#e7f0ff;--muted:#9bb0cc}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;justify-content:space-between;
-  padding:10px 12px;background:linear-gradient(180deg,rgba(18,26,36,.95),rgba(18,26,36,.65));
-  border-bottom:1px solid rgba(155,176,204,.18);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
-.stats{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.pill{background:rgba(155,176,204,.10);border:1px solid rgba(155,176,204,.18);padding:6px 10px;border-radius:999px;font-weight:900}
-.pill span{color:var(--muted);margin-right:6px}
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.tool{display:flex;gap:8px;align-items:center;font-weight:900;color:var(--muted);
-  background:rgba(155,176,204,.08);border:1px solid rgba(155,176,204,.18);border-radius:12px;padding:6px 10px}
-select,input,button{font-weight:900}
-select,input[type="number"]{height:30px;border-radius:10px;border:1px solid rgba(155,176,204,.22);
-  background:rgba(155,176,204,.10);color:var(--text);padding:0 8px;outline:none}
-input[type="checkbox"]{width:18px;height:18px}
-button{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);color:var(--text);
-  padding:8px 12px;border-radius:10px;cursor:pointer}
-button:active{transform:translateY(1px)}
-main{display:grid;place-items:center;padding:10px}
-canvas{background:#070a0e;border-radius:18px;border:2px solid rgba(155,176,204,.18);touch-action:none}
-.hint{color:var(--muted);font-size:13px;padding:8px 12px;text-align:center}
-.overlay{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:50;padding:18px}
-.card{width:min(720px,94vw);background:rgba(18,26,36,.95);border:1px solid rgba(155,176,204,.22);
-  border-radius:18px;padding:16px;box-shadow:0 12px 44px rgba(0,0,0,.55);word-break:break-word}
-.card h2{margin:0 0 8px}
-.card p{margin:8px 0;color:var(--muted)}
-kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padding:2px 6px;border-radius:8px;font-weight:900;color:var(--text)}
-.small{font-size:12px;color:var(--muted);font-weight:800}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Snake – All Features</title>
+  <style>
+    :root { --bg:#0b0f14; --panel:#121a24; --text:#e7f0ff; --muted:#9bb0cc; }
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    .wrap { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+    header{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+      padding: 12px 14px; background: linear-gradient(180deg, rgba(18,26,36,.95), rgba(18,26,36,.65));
+      position: sticky; top: 0; z-index: 10; backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(155,176,204,.15);
+    }
+    .stats{ display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    .pill{ background: rgba(155,176,204,.10); border: 1px solid rgba(155,176,204,.18); padding: 6px 10px; border-radius: 999px; font-weight: 900; }
+    .pill span{ color: var(--muted); font-weight: 900; margin-right: 6px; }
+    .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .tool{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      font-weight: 900; color: var(--muted);
+      background: rgba(155,176,204,.08);
+      border: 1px solid rgba(155,176,204,.18);
+      border-radius: 12px; padding: 6px 10px;
+      max-width: min(980px, 96vw);
+    }
+    .tool label{ display:flex; gap:6px; align-items:center; }
+    .tool small{ color: var(--muted); font-weight: 900; }
+    select, input, button{ font-weight: 900; }
+    select, input[type="number"]{
+      height: 30px; border-radius: 10px; border: 1px solid rgba(155,176,204,.22);
+      background: rgba(155,176,204,.10); color: var(--text); padding: 0 8px; outline: none;
+    }
+    input[type="checkbox"]{ width:18px; height:18px; }
+    input[type="color"]{ width:44px; height:30px; padding:0; border:0; background:transparent; }
+    button{
+      background: rgba(155,176,204,.12); border: 1px solid rgba(155,176,204,.22);
+      color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer;
+    }
+    button:active{ transform: translateY(1px); }
+    main{ display:grid; place-items:center; padding: 10px; }
+    canvas{ background:#070a0e; border-radius: 18px; border: 2px solid rgba(155,176,204,.18); touch-action: none; }
+    .hint{ color: var(--muted); font-size: 13px; padding: 8px 14px; text-align:center; }
+    .controls{
+      display:grid; gap:10px; padding: 10px 14px 16px;
+      grid-template-columns: 1fr 1fr 1fr;
+      max-width: 560px; width: min(560px, 96vw);
+      margin: 0 auto;
+    }
+    .dpad{
+      display:grid; place-items:center;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 10px;
+      grid-column: 1 / -1;
+    }
+    .dpad button{ height: 56px; font-size: 18px; border-radius: 14px; }
+    .empty{ visibility:hidden; }
+    .row{ display:flex; gap:10px; justify-content:center; grid-column: 1 / -1; }
+    .row button{ flex: 1; height: 44px; }
+
+    .overlay{
+      position: fixed; inset: 0; display:none; place-items:center;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(6px); z-index: 50;
+      padding: 18px;
+    }
+    .card{
+      width: min(720px, 94vw);
+      background: rgba(18,26,36,.95);
+      border: 1px solid rgba(155,176,204,.22);
+      border-radius: 18px; padding: 16px;
+      box-shadow: 0 12px 44px rgba(0,0,0,.55);
+      word-break: break-word;
+    }
+    .card h2{ margin: 0 0 8px; }
+    .card p{ margin: 8px 0; color: var(--muted); }
+    kbd{
+      background: rgba(155,176,204,.12);
+      border: 1px solid rgba(155,176,204,.22);
+      padding: 2px 6px; border-radius: 8px;
+      font-weight: 900; color: var(--text);
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="stats">
-    <div class="pill"><span>Score</span><b id="score">0</b></div>
-    <div class="pill"><span>High</span><b id="high">0</b></div>
-    <div class="pill"><span>Mode</span><b id="modeLabel">Eat</b></div>
-    <div class="pill"><span>Apples</span><b id="appleLabel">1</b></div>
-    <div class="pill"><span>Shield</span><b id="shieldLabel">0</b></div>
-    <div class="pill"><span>Slow</span><b id="slowLabel">0</b></div>
-    <div class="pill"><span>Freeze</span><b id="freezeLabel">0</b></div>
-    <div class="pill"><span>x2</span><b id="doubleLabel">0</b></div>
-    <div class="pill"><span>Magnet</span><b id="magnetLabel">0</b></div>
+<div class="wrap">
+  <header>
+    <div class="stats">
+      <div class="pill"><span>Score</span><b id="score">0</b></div>
+      <div class="pill"><span>High</span><b id="high">0</b></div>
+      <div class="pill"><span>Speed</span><b id="spd">1</b></div>
+      <div class="pill"><span>Mode</span><b id="modeLabel">Eat</b></div>
+      <div class="pill"><span>Apples</span><b id="appleLabel">1</b></div>
+      <div class="pill"><span>Ver</span><b id="ver">v1.0.0</b></div>
+      <div class="pill"><span>Shield</span><b id="shieldLabel">0</b></div>
+      <div class="pill"><span>Slow</span><b id="slowLabel">0</b></div>
+      <div class="pill"><span>Freeze</span><b id="freezeLabel">0</b></div>
+      <div class="pill"><span>x2</span><b id="doubleLabel">0</b></div>
+      <div class="pill"><span>Magnet</span><b id="magnetLabel">0</b></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tool">Mode
+        <select id="modeSelect" aria-label="Mode">
+          <option value="eat">Eat apples</option>
+          <option value="dodge">Dodge apples</option>
+        </select>
+      </div>
+
+      <div class="tool">Apples
+        <input id="appleCount" type="number" min="1" max="12" step="1" value="1" aria-label="Apple count">
+      </div>
+
+      <div class="tool" title="Dodge mode: adds +1 apple every 8 points (up to 12).">
+        <input id="wavesToggle" type="checkbox">
+        Waves
+      </div>
+
+      <div class="tool" title="Dodge mode: apples speed up as you score.">
+        <input id="rampToggle" type="checkbox">
+        Speed ramp
+      </div>
+
+      <div class="tool" title="Power-ups: Off disables all power-up spawns. Custom lets you pick which ones can spawn.">
+        Power-ups
+        <select id="powerMode" aria-label="Power-up mode">
+          <option value="off">Off</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="tool" title="Choose which power-ups are allowed to spawn (Custom mode).">
+        <small>Enabled:</small>
+        <label><input id="pShield" type="checkbox">Shield</label>
+        <label><input id="pSlow" type="checkbox">Slow</label>
+        <label><input id="pFreeze" type="checkbox">Freeze</label>
+        <label><input id="pDouble" type="checkbox">x2</label>
+        <label><input id="pMagnet" type="checkbox">Magnet</label>
+        <label><input id="pShrink" type="checkbox">Shrink</label>
+      </div>
+
+      <div class="tool" title="Snake colors (saved on your device)">
+        <small>Snake</small>
+        <input id="snakeColor" type="color" value="#b7d7ff" aria-label="Snake color">
+        <small>Head</small>
+        <input id="headColor" type="color" value="#e7f0ff" aria-label="Head color">
+        <button id="resetColorsBtn" type="button">Reset</button>
+      </div>
+
+      <div class="tool" title="Unlock cosmetics by reaching milestones, then toggle them on/off anytime.">
+        <label><input id="bgEnable" type="checkbox">BG</label>
+        <select id="bgSelect" aria-label="Background select">
+          <option value="default">Default</option>
+        </select>
+        <label><input id="borderEnable" type="checkbox">Border</label>
+        <select id="borderSelect" aria-label="Border select">
+          <option value="default">Default</option>
+        </select>
+      </div>
+
+      <button id="pauseBtn" type="button">Pause</button>
+      <button id="restartBtn" type="button">Restart</button>
+    </div>
+  </header>
+
+  <main>
+    <canvas id="game" width="420" height="420" aria-label="Snake game canvas"></canvas>
+  </main>
+
+  <div class="hint">
+    Desktop: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> • <kbd>Space</kbd>/<kbd>P</kbd> pause • <kbd>R</kbd> restart<br/>
+    Mobile: swipe to turn (easy). Tap board to pause. Or use the buttons below.
   </div>
 
-  <div class="toolbar">
-    <div class="tool">Mode
-      <select id="modeSelect" aria-label="Mode">
-        <option value="eat">Eat</option>
-        <option value="dodge">Dodge</option>
-      </select>
+  <footer class="controls" aria-label="Mobile controls">
+    <div class="dpad">
+      <button class="empty" tabindex="-1" aria-hidden="true"></button>
+      <button id="upBtn" type="button">▲</button>
+      <button class="empty" tabindex="-1" aria-hidden="true"></button>
+
+      <button id="leftBtn" type="button">◀</button>
+      <button id="pauseBtn2" type="button">⏯</button>
+      <button id="rightBtn" type="button">▶</button>
+
+      <button class="empty" tabindex="-1" aria-hidden="true"></button>
+      <button id="downBtn" type="button">▼</button>
+      <button class="empty" tabindex="-1" aria-hidden="true"></button>
     </div>
 
-    <div class="tool">Apples
-      <input id="appleCount" type="number" min="1" max="12" value="1" aria-label="Apple count">
+    <div class="row">
+      <button id="slowBtn" type="button">- Speed</button>
+      <button id="fastBtn" type="button">+ Speed</button>
     </div>
-
-    <div class="tool" title="In dodge mode, adds a new apple every 8 points (up to 12).">
-      <input id="wavesToggle" type="checkbox">
-      Waves
-    </div>
-
-    <div class="tool" title="In dodge mode, apples speed up as you score.">
-      <input id="rampToggle" type="checkbox">
-      Speed ramp
-    </div>
-
-    <div class="tool" title="Power-ups: Off disables all power-up spawns. Custom lets you pick which ones can spawn.">
-      Power-ups
-      <select id="powerMode">
-        <option value="off">Off</option>
-        <option value="custom">Custom</option>
-      </select>
-    </div>
-
-    <div class="tool" style="flex-wrap:wrap;max-width:min(860px,96vw)">
-      <span class="small">Enabled:</span>
-      <label class="small"><input id="pShield" type="checkbox"> Shield</label>
-      <label class="small"><input id="pSlow" type="checkbox"> Slow</label>
-      <label class="small"><input id="pFreeze" type="checkbox"> Freeze</label>
-      <label class="small"><input id="pDouble" type="checkbox"> x2</label>
-      <label class="small"><input id="pMagnet" type="checkbox"> Magnet</label>
-      <label class="small"><input id="pShrink" type="checkbox"> Shrink</label>
-    </div>
-
-    <button id="pauseBtn" type="button">Pause</button>
-    <button id="restartBtn" type="button">Restart</button>
-  </div>
-</header>
-
-<main>
-  <canvas id="game" width="420" height="420" aria-label="Snake canvas"></canvas>
-</main>
-
-<div class="hint">
-  Desktop: <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> • <kbd>Space</kbd>/<kbd>P</kbd> pause • <kbd>R</kbd> restart<br>
-  Mobile: swipe to turn (easy sensitivity). Tap board to pause.
+  </footer>
 </div>
 
-<div class="overlay" id="gameOverOverlay" role="dialog" aria-modal="true">
+<div class="overlay" id="overlay" role="dialog" aria-modal="true">
   <div class="card">
     <h2>Game Over</h2>
     <p id="overText"></p>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top: 12px;">
       <button id="playAgain" type="button">Play again</button>
     </div>
   </div>
@@ -133,24 +226,25 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
 
-  function rrPath(x,y,w,h,r){
-    r=Math.max(0,Math.min(r,w/2,h/2));
+  function rrPath(x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w/2, h/2));
     ctx.beginPath();
-    ctx.moveTo(x+r,y);
-    ctx.arcTo(x+w,y,x+w,y+h,r);
-    ctx.arcTo(x+w,y+h,x,y+h,r);
-    ctx.arcTo(x,y+h,x,y,r);
-    ctx.arcTo(x,y,x+w,y,r);
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
     ctx.closePath();
   }
 
   const GRID = 21;
-  const cell = Math.floor(canvas.width / GRID);
+  const cell = Math.floor(Math.min(canvas.width, canvas.height) / GRID);
   const pad = Math.floor((canvas.width - cell * GRID) / 2);
 
-  // UI
+  // UI refs
   const scoreEl = document.getElementById('score');
-  const highEl = document.getElementById('high');
+  const highEl  = document.getElementById('high');
+  const spdEl   = document.getElementById('spd');
   const modeLabel = document.getElementById('modeLabel');
   const appleLabel = document.getElementById('appleLabel');
   const shieldLabel = document.getElementById('shieldLabel');
@@ -172,146 +266,124 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
   const pMagnet = document.getElementById('pMagnet');
   const pShrink = document.getElementById('pShrink');
 
+  const snakeColorInput = document.getElementById('snakeColor');
+  const headColorInput  = document.getElementById('headColor');
+  const resetColorsBtn  = document.getElementById('resetColorsBtn');
+
+  const bgEnable = document.getElementById('bgEnable');
+  const bgSelect = document.getElementById('bgSelect');
+  const borderEnable = document.getElementById('borderEnable');
+  const borderSelect = document.getElementById('borderSelect');
+
   const pauseBtn = document.getElementById('pauseBtn');
+  const pauseBtn2 = document.getElementById('pauseBtn2');
   const restartBtn = document.getElementById('restartBtn');
-
-  const overOverlay = document.getElementById('gameOverOverlay');
-  const overText = document.getElementById('overText');
   const playAgain = document.getElementById('playAgain');
+  const overlay = document.getElementById('overlay');
+  const overText = document.getElementById('overText');
 
-  // Storage
-  const PREF_KEY = 'snake_mode_prefs_v4';
-  const HS_EAT = 'snake_hs_eat_v4';
-  const HS_DODGE = 'snake_hs_dodge_v4';
+  const upBtn = document.getElementById('upBtn');
+  const downBtn = document.getElementById('downBtn');
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  const slowBtn = document.getElementById('slowBtn');
+  const fastBtn = document.getElementById('fastBtn');
 
-  function loadJson(key, fallback){
-    try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-    catch{ return fallback; }
+  // Storage helpers
+  function loadJson(key, fallback) {
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch { return fallback; }
   }
-  function saveJson(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); } catch{} }
-
-  // Preferences
-  let prefs = loadJson(PREF_KEY, {
-    mode:'eat', apples:1, waves:true, ramp:true,
-    powerMode:'custom',
-    enabledPowers: { shield:true, slow:true, freeze:true, double:true, magnet:true, shrink:true }
-  });
-  if (prefs.mode !== 'eat' && prefs.mode !== 'dodge') prefs.mode = 'eat';
-  prefs.apples = Math.max(1, Math.min(12, Math.floor(Number(prefs.apples)||1)));
-  prefs.waves = !!prefs.waves;
-  prefs.ramp = !!prefs.ramp;
-  if (prefs.powerMode !== 'off' && prefs.powerMode !== 'custom') prefs.powerMode = 'custom';
-  prefs.enabledPowers = prefs.enabledPowers || {};
-  const ep = (k, d=true) => (prefs.enabledPowers[k] === undefined ? d : !!prefs.enabledPowers[k]);
+  function saveJson(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+  function loadColor(key, fallback) {
+    try { const v = localStorage.getItem(key); return (v && /^#[0-9a-fA-F]{6}$/.test(v)) ? v : fallback; }
+    catch { return fallback; }
+  }
 
   // Colors
   const COL = {
     grid: 'rgba(155,176,204,.08)',
-    bg: '#070a0e',
-    snake: '#b7d7ff',
-    head: '#e7f0ff',
     food: '#7cf7c5',
     foodGlow: 'rgba(124,247,197,.35)',
     hazard: '#ff6b6b',
     hazardGlow: 'rgba(255,107,107,.35)',
     power: '#c28bff',
     powerGlow: 'rgba(194,139,255,.35)',
-    text: '#e7f0ff'
+    text: '#e7f0ff',
   };
+  const DEFAULT_BG = '#070a0e';
 
-  // Game state
-  let mode = prefs.mode;
-  let appleTarget = prefs.apples;
-  let wavesOn = prefs.waves;
-  let rampOn = prefs.ramp;
+  // Cosmetic unlocks (predetermined milestones)
+  const BG_UNLOCKS = [
+    { score: 10, id: 'red',    name: 'Red (10)',    color: '#ff2d2d' },
+    { score: 20, id: 'blue',   name: 'Blue (20)',   color: '#2d6bff' },
+    { score: 30, id: 'green',  name: 'Green (30)',  color: '#2dff6b' },
+    { score: 35, id: 'white',  name: 'White (35)',  color: '#ffffff' },
+    { score: 40, id: 'yellow', name: 'Yellow (40)', color: '#ffd400' },
+  ];
+  const BORDER_UNLOCKS = [
+    { score: 15, id: 'orange',    name: 'Orange (15)',     color: '#ff8a00' },
+    { score: 25, id: 'neongreen', name: 'Neon green (25)', color: '#39ff14' },
+  ];
 
-  let powerMode = prefs.powerMode; // off | custom
-  let enabledPowers = {
-    shield: ep('shield'), slow: ep('slow'), freeze: ep('freeze'),
-    double: ep('double'), magnet: ep('magnet'), shrink: ep('shrink')
-  };
+  const UNLOCK_KEY = 'snake_unlocks_all_v1';
+  const COS_PREF_KEY = 'snake_cosmetic_prefs_all_v1';
+  let unlocks = loadJson(UNLOCK_KEY, { bg: [], border: [] });
+  if (!Array.isArray(unlocks.bg)) unlocks.bg = [];
+  if (!Array.isArray(unlocks.border)) unlocks.border = [];
+  let cosPrefs = loadJson(COS_PREF_KEY, { bgOn:false, bgId:'default', borderOn:false, borderId:'default' });
 
-  let paused = false;
-  let gameOver = false;
+  function isUnlocked(list, id) { return list.includes(id); }
+  function optionEl(value, label) { const o = document.createElement('option'); o.value=value; o.textContent=label; return o; }
 
-  let snake = [];
-  let dir = {x:1,y:0};
-  let nextDir = {x:1,y:0};
-  let apples = []; // {x,y,dx,dy}
-  let score = 0;
-  let grow = 0;
+  function rebuildCosmeticSelects() {
+    bgSelect.innerHTML = '';
+    bgSelect.appendChild(optionEl('default', 'Default'));
+    for (const u of BG_UNLOCKS) if (isUnlocked(unlocks.bg, u.id)) bgSelect.appendChild(optionEl(u.id, u.name));
 
-  // Dodge difficulty vars
-  let ticks = 0;
-  let survivalTicks = 0;
-  let appleMoveEvery = 3; // lower = faster
+    borderSelect.innerHTML = '';
+    borderSelect.appendChild(optionEl('default', 'Default'));
+    for (const u of BORDER_UNLOCKS) if (isUnlocked(unlocks.border, u.id)) borderSelect.appendChild(optionEl(u.id, u.name));
 
-  // Power-up effects (timers in ticks)
-  let shield = 0;        // blocks hits
-  let slowTicks = 0;     // slows apples
-  let freezeTicks = 0;   // stops apples moving
-  let doubleTicks = 0;   // double score for a while
-  let magnetTicks = 0;   // eat mode: nearby apples auto-collect
-  let powerUp = null;    // {x,y,type}
-  let powerAge = 0;
+    bgEnable.checked = !!cosPrefs.bgOn;
+    borderEnable.checked = !!cosPrefs.borderOn;
 
-  const POWER_TYPES = ['shield','slow','freeze','double','magnet','shrink'];
-  const POWER_DESPAWN_TICKS = 70;
+    const bgOk = (cosPrefs.bgId === 'default') || isUnlocked(unlocks.bg, cosPrefs.bgId);
+    const brOk = (cosPrefs.borderId === 'default') || isUnlocked(unlocks.border, cosPrefs.borderId);
+    bgSelect.value = bgOk ? cosPrefs.bgId : 'default';
+    borderSelect.value = brOk ? cosPrefs.borderId : 'default';
 
-  // Timing
-  let speedLevel = 1;
-  let tickMsBase = 120;
-  let tickMs = tickMsBase;
-
-  function clampInt(n, lo, hi, fallback){
-    n = Number(n);
-    if (!Number.isFinite(n)) return fallback;
-    return Math.max(lo, Math.min(hi, Math.floor(n)));
+    cosPrefs.bgId = bgSelect.value;
+    cosPrefs.borderId = borderSelect.value;
+    saveJson(COS_PREF_KEY, cosPrefs);
   }
 
-  function getHsKey(){ return (mode === 'dodge') ? HS_DODGE : HS_EAT; }
-
-  function same(a,b){ return a.x===b.x && a.y===b.y; }
-  function randCell(){ return {x:Math.floor(Math.random()*GRID), y:Math.floor(Math.random()*GRID)}; }
-  function manhattan(a,b){ return Math.abs(a.x-b.x) + Math.abs(a.y-b.y); }
-
-  function cellOccupiedBySnake(c){ return snake.some(s => same(s,c)); }
-  function cellOccupiedByApples(c){ return apples.some(a => a && same(a,c)); }
-  function cellOccupiedByPower(c){ return powerUp && same(powerUp, c); }
-
-  function randomFreeCell(){
-    for (let k=0;k<250;k++){
-      const c = randCell();
-      if (!cellOccupiedBySnake(c) && !cellOccupiedByApples(c) && !cellOccupiedByPower(c)) return c;
-    }
-    for (let y=0;y<GRID;y++) for (let x=0;x<GRID;x++){
-      const c = {x,y};
-      if (!cellOccupiedBySnake(c) && !cellOccupiedByApples(c) && !cellOccupiedByPower(c)) return c;
-    }
-    return {x:0,y:0};
+  function findBgColor(id) {
+    if (id === 'default') return DEFAULT_BG;
+    const u = BG_UNLOCKS.find(x => x.id === id);
+    return u ? u.color : DEFAULT_BG;
+  }
+  function findBorderColor(id) {
+    if (id === 'default') return 'rgba(155,176,204,.18)';
+    const u = BORDER_UNLOCKS.find(x => x.id === id);
+    return u ? u.color : 'rgba(155,176,204,.18)';
   }
 
-  function makeApple(){
-    const pos = randomFreeCell();
-    const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-    const d = dirs[Math.floor(Math.random()*dirs.length)];
-    return {x:pos.x,y:pos.y,dx:d.x,dy:d.y};
+  let activeBg = DEFAULT_BG;
+  let activeBorder = 'rgba(155,176,204,.18)';
+  function applyCosmetics() {
+    activeBg = (bgEnable.checked && bgSelect.value !== 'default') ? findBgColor(bgSelect.value) : DEFAULT_BG;
+    activeBorder = (borderEnable.checked && borderSelect.value !== 'default') ? findBorderColor(borderSelect.value) : 'rgba(155,176,204,.18)';
   }
-
-  function ensureAppleCount(){
-    while (apples.length < appleTarget) apples.push(makeApple());
-    while (apples.length > appleTarget) apples.pop();
-  }
-
-  function setSpeed(level){
-    speedLevel = Math.max(1, Math.min(10, level));
-    tickMs = Math.round(tickMsBase / (0.85 + speedLevel * 0.22));
-  }
+  bgEnable.addEventListener('change', () => { cosPrefs.bgOn = bgEnable.checked; saveJson(COS_PREF_KEY, cosPrefs); applyCosmetics(); });
+  borderEnable.addEventListener('change', () => { cosPrefs.borderOn = borderEnable.checked; saveJson(COS_PREF_KEY, cosPrefs); applyCosmetics(); });
+  bgSelect.addEventListener('change', () => { cosPrefs.bgId = bgSelect.value; saveJson(COS_PREF_KEY, cosPrefs); applyCosmetics(); });
+  borderSelect.addEventListener('change', () => { cosPrefs.borderId = borderSelect.value; saveJson(COS_PREF_KEY, cosPrefs); applyCosmetics(); });
 
   // Toast
-  function toast(msg){
+  function toast(msg) {
     let el = document.getElementById('toast');
-    if (!el){
+    if (!el) {
       el = document.createElement('div');
       el.id = 'toast';
       el.style.position = 'fixed';
@@ -335,8 +407,221 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     toast._t = setTimeout(()=>{ el.style.display='none'; }, 1600);
   }
 
+  // Snake color customization
+  const COLOR_KEY_SNAKE = 'snake_color_body_all_v1';
+  const COLOR_KEY_HEAD  = 'snake_color_head_all_v1';
+  const DEFAULT_SNAKE = '#b7d7ff';
+  const DEFAULT_HEAD  = '#e7f0ff';
+  let snakeBodyColor = loadColor(COLOR_KEY_SNAKE, DEFAULT_SNAKE);
+  let snakeHeadColor = loadColor(COLOR_KEY_HEAD, DEFAULT_HEAD);
+  snakeColorInput.value = snakeBodyColor;
+  headColorInput.value = snakeHeadColor;
+
+  function saveColors() {
+    snakeBodyColor = snakeColorInput.value;
+    snakeHeadColor = headColorInput.value;
+    try {
+      localStorage.setItem(COLOR_KEY_SNAKE, snakeBodyColor);
+      localStorage.setItem(COLOR_KEY_HEAD, snakeHeadColor);
+    } catch {}
+  }
+  snakeColorInput.addEventListener('input', saveColors);
+  headColorInput.addEventListener('input', saveColors);
+  resetColorsBtn.addEventListener('click', () => {
+    snakeColorInput.value = DEFAULT_SNAKE;
+    headColorInput.value = DEFAULT_HEAD;
+    saveColors();
+  });
+
+  // Power-ups + prefs
+  const POWER_TYPES = ['shield','slow','freeze','double','magnet','shrink'];
+  const PREF_KEY = 'snake_prefs_all_v1';
+  const HS_EAT = 'snake_hs_eat_all_v1';
+  const HS_DODGE = 'snake_hs_dodge_all_v1';
+
+  let prefs = loadJson(PREF_KEY, {
+    mode:'eat', apples:1, waves:true, ramp:true,
+    powerMode:'custom',
+    enabledPowers: { shield:true, slow:true, freeze:true, double:true, magnet:true, shrink:true },
+    speedLevel: 1
+  });
+  if (prefs.mode !== 'eat' && prefs.mode !== 'dodge') prefs.mode = 'eat';
+  prefs.apples = Math.max(1, Math.min(12, Math.floor(Number(prefs.apples)||1)));
+  prefs.waves = !!prefs.waves;
+  prefs.ramp = !!prefs.ramp;
+  if (prefs.powerMode !== 'off' && prefs.powerMode !== 'custom') prefs.powerMode = 'custom';
+  prefs.enabledPowers = prefs.enabledPowers || {};
+  prefs.speedLevel = Math.max(1, Math.min(10, Math.floor(Number(prefs.speedLevel)||1)));
+
+  let mode = prefs.mode;
+  let appleTarget = prefs.apples;
+  let wavesOn = prefs.waves;
+  let rampOn = prefs.ramp;
+  let powerMode = prefs.powerMode;
+  let enabledPowers = {
+    shield: prefs.enabledPowers.shield !== false,
+    slow: prefs.enabledPowers.slow !== false,
+    freeze: prefs.enabledPowers.freeze !== false,
+    double: prefs.enabledPowers.double !== false,
+    magnet: prefs.enabledPowers.magnet !== false,
+    shrink: prefs.enabledPowers.shrink !== false,
+  };
+
+  // Bind settings UI initial values
+  modeSelect.value = mode;
+  appleCountInput.value = String(appleTarget);
+  wavesToggle.checked = wavesOn;
+  rampToggle.checked = rampOn;
+  powerModeSelect.value = powerMode;
+  pShield.checked = !!enabledPowers.shield;
+  pSlow.checked = !!enabledPowers.slow;
+  pFreeze.checked = !!enabledPowers.freeze;
+  pDouble.checked = !!enabledPowers.double;
+  pMagnet.checked = !!enabledPowers.magnet;
+  pShrink.checked = !!enabledPowers.shrink;
+
+  function powerSpawnsEnabled(){ return powerMode !== 'off'; }
+  function enabledPowerList(){
+    const list = [];
+    for (const t of POWER_TYPES) if (enabledPowers[t]) list.push(t);
+    return list;
+  }
+
+  let powerUp = null;
+  let powerAge = 0;
+  const POWER_DESPAWN_TICKS = 70;
+
+  // Effects
+  let shield = 0;
+  let slowTicks = 0;
+  let freezeTicks = 0;
+  let doubleTicks = 0;
+  let magnetTicks = 0;
+
+  function maybeSpawnPowerUp(){
+    if (!powerSpawnsEnabled()) return;
+    if (powerUp) return;
+    const list = enabledPowerList();
+    if (list.length === 0) return;
+
+    const chance = (mode === 'dodge') ? 0.55 : 0.45;
+    if (Math.random() > chance) return;
+
+    const type = list[Math.floor(Math.random()*list.length)];
+    const pos = randomFreeCell();
+    powerUp = { x: pos.x, y: pos.y, type };
+    powerAge = 0;
+    toast('Power-up spawned: ' + type);
+  }
+
+  function applyPowerUp(type){
+    if (type === 'shield'){
+      shield = Math.min(3, shield + 1);
+      toast('Picked up: Shield');
+    } else if (type === 'slow'){
+      slowTicks = Math.min(220, slowTicks + 100);
+      toast('Picked up: Slow');
+    } else if (type === 'freeze'){
+      freezeTicks = Math.min(180, freezeTicks + 90);
+      toast('Picked up: Freeze');
+    } else if (type === 'double'){
+      doubleTicks = Math.min(220, doubleTicks + 110);
+      toast('Picked up: x2');
+    } else if (type === 'magnet'){
+      magnetTicks = Math.min(220, magnetTicks + 110);
+      toast('Picked up: Magnet');
+    } else if (type === 'shrink'){
+      if (snake.length > 3){
+        snake.splice(0, Math.min(2, snake.length - 3));
+        toast('Picked up: Shrink');
+      } else {
+        toast('Shrink wasted');
+      }
+    }
+  }
+
+  function tickPowerUpLifetime(){
+    if (!powerUp) return;
+    powerAge += 1;
+    if (powerAge >= POWER_DESPAWN_TICKS){
+      powerUp = null; powerAge = 0;
+    }
+  }
+
+  // Difficulty timing
+  let speedLevel = prefs.speedLevel;
+  let tickMsBase = 120;
+  let tickMs = tickMsBase;
+  function setSpeed(level){
+    speedLevel = Math.max(1, Math.min(10, level));
+    tickMs = Math.round(tickMsBase / (0.85 + speedLevel * 0.22));
+  }
+
+  // Game state
+  let paused = false;
+  let gameOver = false;
+  let snake = [];
+  let dir = {x:1,y:0};
+  let nextDir = {x:1,y:0};
+  let apples = [];
+  let score = 0;
+  let grow = 0;
+  let ticks = 0;
+  let survivalTicks = 0;
+  let appleMoveEvery = 3;
+
+  function clampInt(n, lo, hi, fallback){
+    n = Number(n);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.max(lo, Math.min(hi, Math.floor(n)));
+  }
+  function randCell(){ return { x: Math.floor(Math.random()*GRID), y: Math.floor(Math.random()*GRID) }; }
+  function same(a,b){ return a.x===b.x && a.y===b.y; }
+  function manhattan(a,b){ return Math.abs(a.x-b.x) + Math.abs(a.y-b.y); }
+
+  function cellOccupiedBySnake(c){ return snake.some(s => same(s,c)); }
+  function cellOccupiedByApples(c){ return apples.some(a => a && same(a,c)); }
+  function cellOccupiedByPower(c){ return powerUp && same(powerUp,c); }
+
+  function randomFreeCell(){
+    for (let k=0;k<250;k++){
+      const c = randCell();
+      if (!cellOccupiedBySnake(c) && !cellOccupiedByApples(c) && !cellOccupiedByPower(c)) return c;
+    }
+    for (let y=0;y<GRID;y++) for (let x=0;x<GRID;x++){
+      const c = {x,y};
+      if (!cellOccupiedBySnake(c) && !cellOccupiedByApples(c) && !cellOccupiedByPower(c)) return c;
+    }
+    return {x:0,y:0};
+  }
+
+  function makeApple(){
+    const pos = randomFreeCell();
+    const dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+    const d = dirs[Math.floor(Math.random()*dirs.length)];
+    return { x: pos.x, y: pos.y, dx: d.x, dy: d.y };
+  }
+
+  function ensureAppleCount(){
+    while (apples.length < appleTarget) apples.push(makeApple());
+    while (apples.length > appleTarget) apples.pop();
+  }
+
+  function getHsKey(){ return (mode === 'dodge') ? HS_DODGE : HS_EAT; }
+
+  function savePrefs(){
+    prefs = {
+      mode, apples: appleTarget, waves: wavesOn, ramp: rampOn,
+      powerMode,
+      enabledPowers: {...enabledPowers},
+      speedLevel
+    };
+    saveJson(PREF_KEY, prefs);
+  }
+
   function updateUI(){
     scoreEl.textContent = score;
+    spdEl.textContent = speedLevel;
     modeLabel.textContent = (mode === 'dodge') ? 'Dodge' : 'Eat';
     appleLabel.textContent = String(appleTarget);
     shieldLabel.textContent = String(shield);
@@ -346,23 +631,41 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     magnetLabel.textContent = String(Math.ceil(Math.max(0, magnetTicks)/10));
 
     let hs = 0;
-    try{ hs = Number(localStorage.getItem(getHsKey()) || 0); } catch {}
+    try { hs = Number(localStorage.getItem(getHsKey()) || 0); } catch {}
     highEl.textContent = hs;
 
     pauseBtn.textContent = paused ? 'Resume' : 'Pause';
 
-    // Show/hide power checkboxes depending on power mode
     const disabled = (powerMode === 'off');
-    const setDisabled = (el) => { el.disabled = disabled; el.parentElement.style.opacity = disabled ? 0.5 : 1; };
-    [pShield,pSlow,pFreeze,pDouble,pMagnet,pShrink].forEach(setDisabled);
+    for (const el of [pShield,pSlow,pFreeze,pDouble,pMagnet,pShrink]){
+      el.disabled = disabled;
+      if (el.parentElement) el.parentElement.style.opacity = disabled ? 0.5 : 1;
+    }
   }
 
-  function savePrefs(){
-    saveJson(PREF_KEY, {
-      mode, apples: appleTarget, waves: wavesOn, ramp: rampOn,
-      powerMode,
-      enabledPowers: {...enabledPowers}
-    });
+  function unlockIfNeeded(){
+    for (const u of BG_UNLOCKS){
+      if (score >= u.score && !isUnlocked(unlocks.bg, u.id)){
+        unlocks.bg.push(u.id);
+        saveJson(UNLOCK_KEY, unlocks);
+        rebuildCosmeticSelects();
+        toast('Unlocked BG: ' + u.name);
+      }
+    }
+    for (const u of BORDER_UNLOCKS){
+      if (score >= u.score && !isUnlocked(unlocks.border, u.id)){
+        unlocks.border.push(u.id);
+        saveJson(UNLOCK_KEY, unlocks);
+        rebuildCosmeticSelects();
+        toast('Unlocked Border: ' + u.name);
+      }
+    }
+  }
+
+  function addScore(pts){
+    const mult = (doubleTicks > 0) ? 2 : 1;
+    score += pts * mult;
+    unlockIfNeeded();
   }
 
   function reset(){
@@ -370,7 +673,7 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     grow = 0;
     paused = false;
     gameOver = false;
-    overOverlay.style.display = 'none';
+    overlay.style.display = 'none';
 
     ticks = 0;
     survivalTicks = 0;
@@ -393,7 +696,7 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     apples = [];
     ensureAppleCount();
 
-    setSpeed(mode === 'dodge' ? Math.max(2, speedLevel) : speedLevel);
+    if (mode === 'dodge' && speedLevel < 2) setSpeed(2);
 
     updateUI();
   }
@@ -404,104 +707,25 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
 
     const hsKey = getHsKey();
     let hs = 0;
-    try{ hs = Number(localStorage.getItem(hsKey) || 0); } catch {}
-    if (score > hs) {
+    try { hs = Number(localStorage.getItem(hsKey) || 0); } catch {}
+    if (score > hs){
       hs = score;
-      try{ localStorage.setItem(hsKey, String(hs)); } catch {}
+      try { localStorage.setItem(hsKey, String(hs)); } catch {}
     }
 
     updateUI();
-    overText.textContent = `${reason ? (reason + " • ") : ""}Mode: ${(mode==='dodge')?'Dodge':'Eat'} • Score: ${score} • High score: ${hs}`;
-    overOverlay.style.display = 'grid';
+    overText.textContent = (reason ? (reason + " • ") : "") + "Mode: " + (mode==='dodge'?'Dodge':'Eat') + " • Score: " + score + " • High score: " + hs;
+    overlay.style.display = 'grid';
   }
 
   function validTurn(from,to){ return !(from.x + to.x === 0 && from.y + to.y === 0); }
   function requestDir(d){ if (validTurn(dir,d)) nextDir = d; }
 
-  // Power spawn rules
-  function powerSpawnsEnabled(){
-    return powerMode !== 'off';
-  }
-  function enabledPowerList(){
-    const list = [];
-    for (const t of POWER_TYPES){
-      if (enabledPowers[t]) list.push(t);
-    }
-    return list;
-  }
-
-  function maybeSpawnPowerUp(){
-    if (!powerSpawnsEnabled()) return;
-    if (powerUp) return;
-
-    const list = enabledPowerList();
-    if (list.length === 0) return;
-
-    // Spawn chance tuned: more in dodge (harder), less in eat
-    const chance = (mode === 'dodge') ? 0.55 : 0.45;
-    if (Math.random() > chance) return;
-
-    const type = list[Math.floor(Math.random()*list.length)];
-    const pos = randomFreeCell();
-    powerUp = {x:pos.x,y:pos.y,type};
-    powerAge = 0;
-    const pretty = ({
-      shield:'Shield (S)',
-      slow:'Slow (⏳)',
-      freeze:'Freeze (❄)',
-      double:'x2 Score',
-      magnet:'Magnet',
-      shrink:'Shrink'
-    })[type] || type;
-    toast('Power-up spawned: ' + pretty);
-  }
-
-  function applyPowerUp(type){
-    if (type === 'shield'){
-      shield = Math.min(3, shield + 1);
-      toast('Picked up: Shield (+1)');
-    } else if (type === 'slow'){
-      slowTicks = Math.min(220, slowTicks + 100);
-      toast('Picked up: Slow');
-    } else if (type === 'freeze'){
-      freezeTicks = Math.min(180, freezeTicks + 90);
-      toast('Picked up: Freeze');
-    } else if (type === 'double'){
-      doubleTicks = Math.min(220, doubleTicks + 110);
-      toast('Picked up: x2 score');
-    } else if (type === 'magnet'){
-      magnetTicks = Math.min(220, magnetTicks + 110);
-      toast('Picked up: Magnet');
-    } else if (type === 'shrink'){
-      // Only makes sense if you have length to shrink
-      const shrinkBy = 2;
-      if (snake.length > 3) {
-        snake.splice(0, Math.min(shrinkBy, snake.length - 3));
-        toast('Picked up: Shrink');
-      } else {
-        toast('Shrink wasted (too short)');
-      }
-    }
-  }
-
-  function tickPowerUpLifetime(){
-    if (powerUp){
-      powerAge += 1;
-      if (powerAge >= POWER_DESPAWN_TICKS){
-        powerUp = null;
-        powerAge = 0;
-      }
-    }
-  }
-
-  // Apple movement in dodge mode
   function moveApple(a){
     let nx = a.x + a.dx;
     let ny = a.y + a.dy;
-
     if (nx < 0 || nx >= GRID){ a.dx *= -1; nx = a.x + a.dx; }
     if (ny < 0 || ny >= GRID){ a.dy *= -1; ny = a.y + a.dy; }
-
     if (cellOccupiedBySnake({x:nx,y:ny})){
       a.dx *= -1; a.dy *= -1;
       nx = a.x + a.dx; ny = a.y + a.dy;
@@ -512,19 +736,10 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     a.x = nx; a.y = ny;
   }
 
-  // Scoring helper (double score)
-  function addScore(pts){
-    const mult = (doubleTicks > 0) ? 2 : 1;
-    score += pts * mult;
-  }
-
-  // Main step
   function step(){
     if (paused || gameOver) return;
-
     ticks += 1;
 
-    // Decay effect timers
     if (slowTicks > 0) slowTicks -= 1;
     if (freezeTicks > 0) freezeTicks -= 1;
     if (doubleTicks > 0) doubleTicks -= 1;
@@ -532,64 +747,49 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
 
     dir = nextDir;
     const head = snake[snake.length-1];
-    const newHead = {x: head.x + dir.x, y: head.y + dir.y};
+    const newHead = { x: head.x + dir.x, y: head.y + dir.y };
 
-    if (newHead.x < 0 || newHead.x >= GRID || newHead.y < 0 || newHead.y >= GRID){
-      return endGame('Hit wall');
-    }
+    if (newHead.x < 0 || newHead.x >= GRID || newHead.y < 0 || newHead.y >= GRID) return endGame('Hit wall');
 
-    const bodyToCheck = (mode === 'eat' ? snake : snake.slice(1));
-    if (bodyToCheck.some(s => same(s, newHead))){
-      return endGame('Hit self');
-    }
+    const bodyToCheck = (mode === 'eat') ? snake : snake.slice(1);
+    if (bodyToCheck.some(s => same(s, newHead))) return endGame('Hit self');
 
     snake.push(newHead);
 
-    // Pickup power-up
     if (powerUp && same(powerUp, newHead)){
       applyPowerUp(powerUp.type);
-      powerUp = null;
-      powerAge = 0;
+      powerUp = null; powerAge = 0;
     }
 
     if (mode === 'eat'){
-      // Magnet: auto-collect apples within distance 2
       if (magnetTicks > 0){
         for (let i=0;i<apples.length;i++){
           if (manhattan(newHead, apples[i]) <= 2){
             addScore(1);
             grow += 2;
             apples[i] = makeApple();
-            // chance to spawn a power-up every 6 points of (raw) score-ish:
             if (score > 0 && score % 6 === 0) maybeSpawnPowerUp();
           }
         }
       }
 
-      // Eat if you land on an apple
       let ateIndex = -1;
-      for (let i=0;i<apples.length;i++){
-        if (same(apples[i], newHead)){ ateIndex = i; break; }
-      }
+      for (let i=0;i<apples.length;i++){ if (same(apples[i], newHead)) { ateIndex = i; break; } }
       if (ateIndex >= 0){
         addScore(1);
         grow += 2;
         apples[ateIndex] = makeApple();
         if (score > 0 && score % 6 === 0) maybeSpawnPowerUp();
+        if (score % 6 === 0) setSpeed(speedLevel + 1);
       }
 
       if (grow > 0) grow -= 1;
       else snake.shift();
 
     } else {
-      // Dodge mode: apples are hazards
       if (apples.some(a => same(a, newHead))){
-        if (shield > 0){
-          shield -= 1;
-          toast('Shield saved you!');
-        } else {
-          return endGame('Hit apple');
-        }
+        if (shield > 0){ shield -= 1; toast('Shield saved you!'); }
+        else return endGame('Hit apple');
       }
 
       survivalTicks += 1;
@@ -598,10 +798,8 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
         if (score > 0 && score % 8 === 0) maybeSpawnPowerUp();
 
         if (rampOn && score % 5 === 0){
-          // 3 -> 2 -> 1 as score grows
           appleMoveEvery = Math.max(1, 3 - Math.floor(score / 10));
         }
-
         if (wavesOn && score % 8 === 0 && appleTarget < 12){
           appleTarget += 1;
           appleCountInput.value = String(appleTarget);
@@ -612,7 +810,6 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
 
       snake.shift();
 
-      // Move apples like dodgeballs unless frozen
       if (freezeTicks <= 0){
         const slowFactor = (slowTicks > 0) ? 2 : 1;
         const moveEvery = appleMoveEvery * slowFactor;
@@ -623,55 +820,47 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
 
       const h2 = snake[snake.length-1];
       if (apples.some(a => same(a, h2))){
-        if (shield > 0){
-          shield -= 1;
-          toast('Shield saved you!');
-        } else {
-          return endGame('Apple hit you');
-        }
+        if (shield > 0){ shield -= 1; toast('Shield saved you!'); }
+        else return endGame('Apple hit you');
       }
     }
 
-    // Power-up lifetime
     tickPowerUpLifetime();
-
-    // Keep apple count correct
     ensureAppleCount();
   }
 
   function draw(){
-    ctx.fillStyle = COL.bg;
+    ctx.fillStyle = activeBg;
     ctx.fillRect(0,0,canvas.width,canvas.height);
+    canvas.style.borderColor = activeBorder;
 
-    // Grid
     ctx.strokeStyle = COL.grid;
     ctx.lineWidth = 1;
     for (let i=0;i<=GRID;i++){
       const p = pad + i*cell + 0.5;
-      ctx.beginPath(); ctx.moveTo(pad+0.5,p); ctx.lineTo(pad+GRID*cell+0.5,p); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(p,pad+0.5); ctx.lineTo(p,pad+GRID*cell+0.5); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pad+0.5, p); ctx.lineTo(pad + GRID*cell + 0.5, p); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p, pad+0.5); ctx.lineTo(p, pad + GRID*cell + 0.5); ctx.stroke();
     }
 
-    // Apples
     for (const a of apples){
       const ax = pad + a.x*cell;
       const ay = pad + a.y*cell;
       const glow = (mode === 'dodge') ? COL.hazardGlow : COL.foodGlow;
       const fill = (mode === 'dodge') ? COL.hazard : COL.food;
+
       ctx.fillStyle = glow;
-      rrPath(ax+cell*0.08, ay+cell*0.08, cell*0.84, cell*0.84, cell*0.22); ctx.fill();
+      rrPath(ax + cell*0.08, ay + cell*0.08, cell*0.84, cell*0.84, cell*0.22); ctx.fill();
       ctx.fillStyle = fill;
-      rrPath(ax+cell*0.18, ay+cell*0.18, cell*0.64, cell*0.64, cell*0.18); ctx.fill();
+      rrPath(ax + cell*0.18, ay + cell*0.18, cell*0.64, cell*0.64, cell*0.18); ctx.fill();
     }
 
-    // Power-up
     if (powerUp){
       const px = pad + powerUp.x*cell;
       const py = pad + powerUp.y*cell;
       ctx.fillStyle = COL.powerGlow;
-      rrPath(px+cell*0.08, py+cell*0.08, cell*0.84, cell*0.84, cell*0.22); ctx.fill();
+      rrPath(px + cell*0.08, py + cell*0.08, cell*0.84, cell*0.84, cell*0.22); ctx.fill();
       ctx.fillStyle = COL.power;
-      rrPath(px+cell*0.18, py+cell*0.18, cell*0.64, cell*0.64, cell*0.18); ctx.fill();
+      rrPath(px + cell*0.18, py + cell*0.18, cell*0.64, cell*0.64, cell*0.18); ctx.fill();
 
       ctx.fillStyle = '#0b0f14';
       ctx.font = '900 12px system-ui';
@@ -681,14 +870,13 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
       ctx.fillText(glyph, px + cell*0.5, py + cell*0.52);
     }
 
-    // Snake
     for (let i=0;i<snake.length;i++){
       const s = snake[i];
       const x = pad + s.x*cell;
       const y = pad + s.y*cell;
-      const isHead = (i === snake.length-1);
-      ctx.fillStyle = isHead ? COL.head : COL.snake;
-      rrPath(x+cell*0.12, y+cell*0.12, cell*0.76, cell*0.76, cell*0.22); ctx.fill();
+      const isHead = (i === snake.length - 1);
+      ctx.fillStyle = isHead ? snakeHeadColor : snakeBodyColor;
+      rrPath(x + cell*0.12, y + cell*0.12, cell*0.76, cell*0.76, cell*0.22); ctx.fill();
     }
 
     if (paused && !gameOver){
@@ -701,7 +889,7 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     }
   }
 
-  // Game loop
+  // Loop
   let last = performance.now();
   let acc = 0;
   function loop(t){
@@ -720,7 +908,7 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     updateUI();
   }
 
-  // Inputs
+  // Keyboard
   window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     if (k === 'p' || k === ' ') { togglePause(); e.preventDefault(); return; }
@@ -732,7 +920,7 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     else if (k === 'arrowright' || k === 'd') requestDir({x:1,y:0});
   }, { passive:false });
 
-  // Mobile swipe + tap to pause
+  // Swipe + tap to pause
   let touchStart = null;
   let didSwipe = false;
   function getTouchPos(ev){
@@ -767,10 +955,19 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     touchStart = null;
   }, {passive:false});
 
-  // UI handlers
+  // Buttons
   pauseBtn.addEventListener('click', togglePause);
+  pauseBtn2.addEventListener('click', togglePause);
   restartBtn.addEventListener('click', () => reset());
   playAgain.addEventListener('click', () => reset());
+
+  upBtn.addEventListener('click', () => requestDir({x:0,y:-1}));
+  downBtn.addEventListener('click', () => requestDir({x:0,y:1}));
+  leftBtn.addEventListener('click', () => requestDir({x:-1,y:0}));
+  rightBtn.addEventListener('click', () => requestDir({x:1,y:0}));
+
+  slowBtn.addEventListener('click', () => { setSpeed(speedLevel - 1); savePrefs(); updateUI(); });
+  fastBtn.addEventListener('click', () => { setSpeed(speedLevel + 1); savePrefs(); updateUI(); });
 
   function applySettingsAndRestart(){
     mode = (modeSelect.value === 'dodge') ? 'dodge' : 'eat';
@@ -792,36 +989,31 @@ kbd{background:rgba(155,176,204,.12);border:1px solid rgba(155,176,204,.22);padd
     reset();
   }
 
-  // Init UI from prefs
-  modeSelect.value = mode;
-  appleCountInput.value = String(appleTarget);
-  wavesToggle.checked = wavesOn;
-  rampToggle.checked = rampOn;
-
-  powerModeSelect.value = powerMode;
-  pShield.checked = enabledPowers.shield;
-  pSlow.checked = enabledPowers.slow;
-  pFreeze.checked = enabledPowers.freeze;
-  pDouble.checked = enabledPowers.double;
-  pMagnet.checked = enabledPowers.magnet;
-  pShrink.checked = enabledPowers.shrink;
-
   modeSelect.addEventListener('change', applySettingsAndRestart);
   appleCountInput.addEventListener('change', applySettingsAndRestart);
   wavesToggle.addEventListener('change', applySettingsAndRestart);
   rampToggle.addEventListener('change', applySettingsAndRestart);
   powerModeSelect.addEventListener('change', applySettingsAndRestart);
-
   [pShield,pSlow,pFreeze,pDouble,pMagnet,pShrink].forEach(el => el.addEventListener('change', applySettingsAndRestart));
 
-  // Double-check (pre-flight)
-  const required = ['score','high','modeLabel','appleLabel','shieldLabel','slowLabel','freezeLabel','doubleLabel','magnetLabel','modeSelect','appleCount','wavesToggle','rampToggle','powerMode','pShield','pSlow','pFreeze','pDouble','pMagnet','pShrink','pauseBtn','restartBtn','gameOverOverlay','overText','game'];
+  // Pre-flight check
+  const required = [
+    'score','high','spd','modeLabel','appleLabel','ver','shieldLabel','slowLabel','freezeLabel','doubleLabel','magnetLabel',
+    'modeSelect','appleCount','wavesToggle','rampToggle','powerMode','pShield','pSlow','pFreeze','pDouble','pMagnet','pShrink',
+    'snakeColor','headColor','resetColorsBtn','bgEnable','bgSelect','borderEnable','borderSelect',
+    'pauseBtn','pauseBtn2','restartBtn','playAgain','overlay','overText','game',
+    'upBtn','downBtn','leftBtn','rightBtn','slowBtn','fastBtn'
+  ];
   for (const id of required){
     if (!document.getElementById(id)) throw new Error('Missing element: ' + id);
   }
 
+  // Cosmetics init
+  rebuildCosmeticSelects();
+  applyCosmetics();
+
   // Start
-  setSpeed(1);
+  setSpeed(speedLevel);
   reset();
   requestAnimationFrame(loop);
 })();
